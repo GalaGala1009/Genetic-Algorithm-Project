@@ -9,9 +9,9 @@ const foodList = [];
 var frame = 0
 var currentTime = Math.floor((Date.now() - startTime) / 1000);
 var balls = [];
-var numBalls = 6; // 初始球數
+var numBalls = 6; // init number of balls
 
-// 食物分數計算公式
+// Food Score Calcuation Function
 function hexToRgb(hex) {
     hex = hex.replace('#', '');
     if (hex.length === 3) {
@@ -29,14 +29,14 @@ class Food{
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.edge = 4; // 食物半徑
-        // 隨機顏色，增加基因演化壓力
+        this.edge = 4; // radius of food
+        // random color to increase genetic evolution pressure
         this.color = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-        this.life = 50.00; // 食物生命週期
+        this.life = 50.00; // life cycle of food
     }
 
     draw(ctx) {
-        this.life -= 0.01; // 食物生命週期減少
+        this.life -= 0.01; // decrease life cycle of food
         ctx.beginPath();
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.edge, this.edge);
@@ -72,7 +72,7 @@ class Ball {
         ctx.stroke();
         ctx.closePath();
 
-        // 在球中心繪製編號
+        // Draw ball index
         ctx.font = `${Math.max(12, this.radius)}px Arial`;
         ctx.fillStyle = "#fff";
         ctx.textAlign = "center";
@@ -85,7 +85,7 @@ class Ball {
         this.y += this.diry * this.dy;
         this.life += (0.0001 * this.radius);
 
-        // 判斷食物碰撞
+        // checking food collision
         for (let i = foodList.length - 1; i >= 0; i--) {
             const food = foodList[i];
             const foodCenterX = food.x + food.edge / 2;
@@ -94,7 +94,7 @@ class Ball {
                 (this.x - foodCenterX) ** 2 + (this.y - foodCenterY) ** 2
             );
             if (dist < this.radius + food.edge / 2) {
-                // 顏色越接近分數越高
+                // higher score for closer colors
                 const foodRGB = hexToRgb(food.color);
                 const ballRGB = hexToRgb(this.color);
                 const colorDist = Math.sqrt(
@@ -110,7 +110,7 @@ class Ball {
             }
         }
 
-        // 球碰撞反彈
+        // Ball collision and bounce
         for (const other of balls) {
             if (other !== this) {
                 const dx = other.x - this.x;
@@ -124,13 +124,13 @@ class Ball {
                     this.y -= ny * (overlap / 2);
                     other.x += nx * (overlap / 2);
                     other.y += ny * (overlap / 2);
-                    // 交換方向並微調，避免重疊後卡死
+                    // Exchange direction and adjust slightly to avoid getting stuck
                     let tmpx = this.dirx, tmpy = this.diry;
                     this.dirx = -other.dirx + (Math.random() - 0.5) * 0.5;
                     this.diry = -other.diry + (Math.random() - 0.5) * 0.5;
                     other.dirx = -tmpx + (Math.random() - 0.5) * 0.5;
                     other.diry = -tmpy + (Math.random() - 0.5) * 0.5;
-                    // 正規化
+                    // regularize
                     let len1 = Math.sqrt(this.dirx * this.dirx + this.diry * this.diry);
                     let len2 = Math.sqrt(other.dirx * other.dirx + other.diry * other.diry);
                     if (len1 !== 0) {
@@ -144,11 +144,11 @@ class Ball {
                 }
             }
         }
-        // 左右牆
+        // left and right wall
         if (this.x + this.radius > canvas.width) {
             this.x = canvas.width - this.radius;
             this.dirx *= -1;
-            // 隨機微調方向，避免卡牆
+            // random adjustment to direction to avoid sticking
             this.diry += (Math.random() - 0.5) * 0.5;
         }
         if (this.x - this.radius < 0) {
@@ -156,7 +156,7 @@ class Ball {
             this.dirx *= -1;
             this.diry += (Math.random() - 0.5) * 0.5;
         }
-        // 上下牆
+        // top and bottom wall
         if (this.y + this.radius > canvas.height) {
             this.y = canvas.height - this.radius;
             this.diry *= -1;
@@ -167,7 +167,7 @@ class Ball {
             this.diry *= -1;
             this.dirx += (Math.random() - 0.5) * 0.5;
         }
-        // 保持速度方向單位長度，避免速度越來越大
+        // keep direction as unit length
         let len = Math.sqrt(this.dirx * this.dirx + this.diry * this.diry);
         if (len !== 0) {
             this.dirx /= len;
@@ -176,7 +176,7 @@ class Ball {
     }
 }
 
-// 隨機基因產生器
+// gene generator
 function geneGenerator() {
     let gene = "";
     for(let i = 0; i < geneLength; i++) {
@@ -185,7 +185,7 @@ function geneGenerator() {
     return gene;
 }
 
-// 基因解碼
+// decoder of genes
 function convertGene(gene){
     // 7 bits size, 3 bits speed, 24 bits color
     var size = parseInt(gene.substring(0, 7), 2);
@@ -196,7 +196,7 @@ function convertGene(gene){
     return [Math.max(5, size), speed+1, colorHex];
 }
 
-// 計算當前時間
+// calculate current time
 function drawTime() {
     currentTime = Math.floor((Date.now() - startTime) / 1000);
     ctx.font = "18px Arial";
@@ -206,7 +206,7 @@ function drawTime() {
     ctx.fillText(`Frame: ${frame}`, 10, 50);
 }
 
-// 食物生成（避免與球重疊，最多嘗試100次）
+// food generator 
 function createFood() {
     const foodNum = Math.floor(Math.random() * 10) + 5;
     for (let i = 0; i < foodNum; i++) {
@@ -234,7 +234,7 @@ function createFood() {
     }
 }
 
-// 產生初始球
+// generate init balls
 for (let i = 0; i < numBalls; i++) {
     const x = Math.random() * (canvas.width - 127);
     const y = Math.random() * (canvas.height - 127);
@@ -242,7 +242,7 @@ for (let i = 0; i < numBalls; i++) {
     balls.push(new Ball(x, y, gene));
 }
 
-// 適應度比較
+// compare function for sorting
 function compare(ball1, ball2) {
     return (ball2.score / ball2.life) - (ball1.score / ball1.life);
 }
@@ -251,7 +251,7 @@ function compare(ball1, ball2) {
 function crossOver(gene1, gene2) {
     const crossoverPoint = Math.floor(Math.random() * geneLength);
     var newGene = gene1.substring(0, crossoverPoint) + gene2.substring(crossoverPoint);
-    // 突變
+    // mutation
     let arr = newGene.split('');
     for(let i = 0; i < arr.length; i++) {
         if (Math.random() < mutation_rate) {
@@ -261,7 +261,7 @@ function crossOver(gene1, gene2) {
     return arr.join('');
 }
 
-// 排名顯示（不覆蓋 balls 陣列，避免動畫混亂）
+// show ranking
 function updateRanking() {
     const rankingList = document.getElementById('ranking-list');
     const sortedBalls = balls.slice().sort(compare);
@@ -274,18 +274,18 @@ function updateRanking() {
     }).join('');
 }
 
-// 動畫循環
+// animation loop
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 每 500 frame產生食物
+    // generate food every 500 frames
     if (frame % 500 === 0  && foodList.length < 20) {
         createFood();
     }
 
-    // 交配產生後代
+    // crossover
     if(frame !== 0 && frame % generate_cycle === 0) {
-        // 取前4名隨機配對
+        // select parents from top 4
         const sortedBalls = balls.slice().sort(compare);
         var parent1 = Math.floor(Math.random() * 4);
         var parent2 = Math.floor(Math.random() * 4);
@@ -317,12 +317,12 @@ function animate() {
         mutation_rate -= 0.05;
     }
 
-    // step 2. 根據 fitness function 進行排名
+    // step 2. update ranking
     updateRanking();
 
     //===============drawing part======================================================
 
-    // 繪製食物
+    // draw food
     for (let i = foodList.length - 1; i >= 0; i--) {
         const food = foodList[i];
         if(food.life <= 0) {
@@ -332,7 +332,7 @@ function animate() {
         }
     }
 
-    // 繪製球
+    // draw balls
     for (let i = balls.length - 1; i >= 0; i--) {
         const ball = balls[i];
         if (ball.life > ballLife ) {
@@ -342,12 +342,12 @@ function animate() {
         ball.update(canvas);
         ball.draw(ctx, i);
     }
-    // 繪製時間
+    // draw time
     drawTime();
 
     frame += 1;
     requestAnimationFrame(animate);
 }
 
-// 開始動畫
+// start animation
 animate();
