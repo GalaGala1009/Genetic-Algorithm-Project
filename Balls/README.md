@@ -10,6 +10,8 @@ This project implements a genetic algorithm simulation where balls evolve over g
 - Speed (3 bits) 
 - Color (24 bits)
 
+[balls](./img/balls.gif)
+
 ## Features
 
 - Balls move around in a canvas environment
