@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Balls</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: flex;
+      align-items: center; /* 垂直置中 */
+      justify-content: center;
+      margin-top: 20px;
+    }
+    canvas {
+      border: 2px solid black;
+      display: block;
+    }
+    #ranking {
+      margin-left: 8px; /* 更貼近畫布 */
+      min-width: 220px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div>
+      <canvas id="myCanvas" width="1200" height="700"></canvas>
+      <div id="mating-log" style="margin-top:12px;font-size:16px;"></div>
+    </div>
+    <div id="ranking">
+      <h3>Ranking</h3>
+      <ol id="ranking-list"></ol>
+    </div>
+  </div>
+
+  <script src="main3.js"></script>
+</body>
+</html>
