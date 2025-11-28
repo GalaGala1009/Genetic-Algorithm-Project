@@ -1,4 +1,4 @@
-# Genetic Algorithm Project
+# Evolution Computing Projects
 This repo is created to record my projects of genetic algorithm
 ### Balls
 ---
